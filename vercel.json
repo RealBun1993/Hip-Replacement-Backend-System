@@ -19,13 +19,12 @@
     }
   ],
   "env": {
-    "PYTHON_VERSION": "3.8.19" // 或其他支持的版本
+    "PYTHON_VERSION": "3.8.19"
   },
   "functions": {
     "api/api.py": {
       "memory": 1024,
-      "maxDuration": 10
+      "maxDuration": 60
     }
   }
 }
-
