@@ -2,19 +2,19 @@
   "version": 2,
   "builds": [
     {
-      "src": "api.py",
+      "src": "api/api.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/api/predict_kidney",
-      "dest": "/api.py",
+      "dest": "/api/api.py",
       "methods": ["POST"]
     },
     {
       "src": "/api/predict_blood",
-      "dest": "/api.py",
+      "dest": "/api/api.py",
       "methods": ["POST"]
     }
   ]
