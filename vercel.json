@@ -5,7 +5,8 @@
       "src": "api/api.py",
       "use": "@vercel/python",
       "config": {
-        "buildCommand": "./build.sh"
+        "maxLambdaSize": "50mb",
+        "buildCommand": "pip install -r requirements.txt" // 使用 pip 安装依赖
       }
     }
   ],
@@ -20,5 +21,14 @@
       "dest": "/api/api.py",
       "methods": ["POST"]
     }
-  ]
+  ],
+  "env": {
+    "PYTHON_VERSION": "3.8" // 指定 Python 版本
+  },
+  "functions": {
+    "api/api.py": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
 }
