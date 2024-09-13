@@ -3,11 +3,7 @@
   "builds": [
     {
       "src": "api/api.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb",
-        "buildCommand": "pip install -r requirements.txt" // 使用 pip 安装依赖
-      }
+      "use": "@vercel/python"
     }
   ],
   "routes": [
@@ -23,7 +19,7 @@
     }
   ],
   "env": {
-    "PYTHON_VERSION": "3.8" // 指定 Python 版本
+    "PYTHON_VERSION": "3.8.19" // 或其他支持的版本
   },
   "functions": {
     "api/api.py": {
@@ -32,3 +28,4 @@
     }
   }
 }
+
