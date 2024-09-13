@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/predict_kidney",
+      "dest": "/api.py",
+      "methods": ["POST"]
+    },
+    {
+      "src": "/api/predict_blood",
+      "dest": "/api.py",
+      "methods": ["POST"]
+    }
+  ]
+}

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hip Replacement Outcome Prediction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* 柔和的浅色背景 */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #2d3748;
+        }
+        .navbar {
+            background-color: #1a202c; /* 深色导航栏 */
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+        }
+        .navbar .btn {
+            background-color: #2d3748;
+            border-color: #2c5282;
+            color: white;
+            border-radius: 30px;
+            margin: 0 15px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .navbar .btn:hover {
+            background-color: #2c5282; /* 鼠标悬停时使用更亮的蓝色 */
+            transform: scale(1.1);
+        }
+        .navbar .btn.active {
+            background-color: #2c5282;
+            border-color: #2b6cb0;
+            transform: scale(1.15);
+        }
+        h1 {
+            font-weight: bold;
+            color: #1a202c; /* 深色标题 */
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 2.5rem;
+        }
+        .container-fluid {
+            padding-top: 20px;
+        }
+        .form-label {
+            font-weight: bold;
+            color: #2d3748;
+        }
+        .form-control {
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            background-color: #edf2f7;
+            color: #2d3748;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .form-control:focus {
+            background-color: #e2e8f0;
+            transform: scale(1.05);
+        }
+        .btn-primary {
+            background-color: #3182ce;
+            border-color: #3182ce;
+            border-radius: 30px;
+            transition: background-color 0.3s, transform 0.3s;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+        .btn-primary:hover {
+            background-color: #2b6cb0; /* 鼠标悬停时使用更深的蓝色 */
+            transform: scale(1.1);
+        }
+        .feature-inputs {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            color: #2d3748;
+        }
+        .content-page {
+            display: none;
+        }
+        #home-content {
+            display: block;
+        }
+        .nav-tabs {
+            margin-bottom: 20px;
+            border-bottom: none;
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 30px;
+            background-color: #4a5568;
+            color: #ffffff;
+            font-weight: bold;
+            margin-right: 10px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #3182ce;
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+        .tab-content {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: #2d3748;
+        }
+        canvas {
+            background-color: #edf2f7;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+        }
+        pre {
+            background-color: #edf2f7;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            color: #2d3748;
+        }
+        .numerical-summary {
+            font-family: monospace;
+            white-space: pre-wrap;
+            background-color: #edf2f7;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: #2d3748;
+        }
+        .icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        .icon-box div {
+            margin: 0 20px;
+            text-align: center;
+        }
+        .icon-box img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        .icon-box p {
+            font-size: 1.1rem;
+            color: #2d3748;
+        }
+        .btn-get-started {
+            background-color: #2c5282;
+            color: white;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 30px;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .btn-get-started:hover {
+            background-color: #2b6cb0;
+            transform: scale(1.1);
+        }
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #1a202c;
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container-fluid text-center mt-3">
+        <!-- 导航按钮 -->
+        <div class="navbar">
+            <button id="nav-home" class="btn btn-secondary" onclick="showPage('home')">Home</button>
+            <button id="nav-kidney" class="btn btn-secondary" onclick="showPage('kidney')">AKI Risk Prediction</button>
+            <button id="nav-blood" class="btn btn-secondary" onclick="showPage('blood')">Blood Transfusion Prediction</button>
+        </div>
+    </div>
+
+    <!-- Home Page -->
+    <div id="home-content" class="content-page text-center">
+        <h1>Welcome to the Hip Replacement Outcome Prediction Dashboard</h1>
+        <p style="font-size: 1.2rem;">This dashboard helps predict various outcomes after hip replacement surgery. Select a model above to start making predictions.</p>
+        <!-- 关于网站的介绍文字 -->
+        <div class="about-section mt-5">
+            <p style="font-size: 1.1rem; max-width: 800px; margin: 0 auto;">
+                The Hip Replacement Outcome Prediction Dashboard is designed to assist healthcare professionals in predicting potential complications and outcomes following hip replacement surgery. Utilizing advanced machine learning models, the dashboard provides insights into the likelihood of acute kidney injury (AKI) and the necessity of blood transfusion during or after the procedure. By integrating patient-specific data, this tool aims to enhance decision-making processes, improve patient outcomes, and optimize resource allocation.
+            </p>
+        </div>
+        <!-- Get Started 按钮 -->
+        <button class="btn-get-started" onclick="showPage('kidney')">Get Started</button>
+    </div>
+
+    <!-- AKI Risk Prediction Page -->
+    <div id="kidney-content" class="content-page">
+        <h1>AKI Risk Prediction</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-inputs">
+                    <form id="kidneyForm">
+                        <div id="kidneyFeatureInputs" class="mb-3"></div>
+                        <button type="submit" class="btn btn-primary w-100">Predict</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <ul class="nav nav-tabs" id="kidneyTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="kidney-graphical-tab" data-bs-toggle="tab" data-bs-target="#kidney-graphical" type="button" role="tab" aria-controls="kidney-graphical" aria-selected="true">Graphical Summary</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="kidney-numerical-tab" data-bs-toggle="tab" data-bs-target="#kidney-numerical" type="button" role="tab" aria-controls="kidney-numerical" aria-selected="false">Numerical Summary</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="kidney-model-tab" data-bs-toggle="tab" data-bs-target="#kidney-model" type="button" role="tab" aria-controls="kidney-model" aria-selected="false">Model Summary</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="kidneyTabContent">
+                    <div class="tab-pane fade show active" id="kidney-graphical" role="tabpanel" aria-labelledby="kidney-graphical-tab">
+                        <canvas id="kidneyChart"></canvas>
+                    </div>
+                    <div class="tab-pane fade" id="kidney-numerical" role="tabpanel" aria-labelledby="kidney-numerical-tab">
+                        <div id="kidneyResult" class="numerical-summary"></div>
+                    </div>
+                    <div class="tab-pane fade" id="kidney-model" role="tabpanel" aria-labelledby="kidney-model-tab">
+                        <pre id="kidneyModelSummary"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blood Transfusion Prediction Page -->
+    <div id="blood-content" class="content-page">
+        <h1>Blood Transfusion Prediction</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-inputs">
+                    <form id="bloodForm">
+                        <div id="bloodFeatureInputs" class="mb-3"></div>
+                        <button type="submit" class="btn btn-primary w-100">Predict</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <ul class="nav nav-tabs" id="bloodTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="blood-graphical-tab" data-bs-toggle="tab" data-bs-target="#blood-graphical" type="button" role="tab" aria-controls="blood-graphical" aria-selected="true">Graphical Summary</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="blood-numerical-tab" data-bs-toggle="tab" data-bs-target="#blood-numerical" type="button" role="tab" aria-controls="blood-numerical" aria-selected="false">Numerical Summary</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="blood-model-tab" data-bs-toggle="tab" data-bs-target="#blood-model" type="button" role="tab" aria-controls="blood-model" aria-selected="false">Model Summary</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="bloodTabContent">
+                    <div class="tab-pane fade show active" id="blood-graphical" role="tabpanel" aria-labelledby="blood-graphical-tab">
+                        <canvas id="bloodChart"></canvas>
+                    </div>
+                    <div class="tab-pane fade" id="blood-numerical" role="tabpanel" aria-labelledby="blood-numerical-tab">
+                        <div id="bloodResult" class="numerical-summary"></div>
+                    </div>
+                    <div class="tab-pane fade" id="blood-model" role="tabpanel" aria-labelledby="blood-model-tab">
+                        <pre id="bloodModelSummary"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>&copy; 2024 Hip Replacement Outcome Prediction. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        let kidneyResults = [];
+        let bloodResults = [];
+
+        function showPage(page) {
+            // 隐藏所有页面内容
+            document.querySelectorAll('.content-page').forEach(el => el.style.display = 'none');
+            // 显示选中的页面内容
+            document.getElementById(page + '-content').style.display = 'block';
+
+            // 移除所有导航按钮的 active 类
+            document.querySelectorAll('.navbar .btn').forEach(el => el.classList.remove('active'));
+            // 为当前页面对应的导航按钮添加 active 类
+            document.getElementById('nav-' + page).classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 处理 AKI Risk Prediction 页面逻辑
+            async function fetchKidneyFeatureImportance() {
+                const response = await fetch('/api/feature_importance_kidney');
+                const featureImportance = await response.json();
+                const featureInputs = document.getElementById('kidneyFeatureInputs');
+                const catResponse = await fetch('/api/get_categorical_features_kidney');
+                const categoricalFeatures = await catResponse.json();
+
+                for (const feature in featureImportance) {
+                    const div = document.createElement('div');
+                    if (categoricalFeatures.includes(feature)) {
+                        div.innerHTML = `
+                            <label for="${feature}" class="form-label">${feature}</label>
+                            <select class="form-select" id="${feature}" name="${feature}" required>
+                                <option value="" selected disabled>Choose an option</option>
+                            </select>
+                            <br>`;
+                        featureInputs.appendChild(div);
+                        const uniqueValuesResponse = await fetch(`/api/get_unique_values_kidney?feature=${feature}`);
+                        const uniqueValues = await uniqueValuesResponse.json();
+                        const selectElement = div.querySelector('select');
+                        uniqueValues.forEach(value => {
+                            const option = document.createElement('option');
+                            option.value = value;
+                            option.textContent = value;
+                            selectElement.appendChild(option);
+                        });
+                    } else {
+                        div.innerHTML = `
+                            <label for="${feature}" class="form-label">${feature}</label>
+                            <input type="number" class="form-control" id="${feature}" name="${feature}" step="0.01" required>
+                            <br>`;
+                        featureInputs.appendChild(div);
+                    }
+                }
+            }
+
+            async function fetchKidneyModelSummary() {
+                const response = await fetch('/api/model_summary_kidney');
+                const text = await response.text();
+                document.getElementById('kidneyModelSummary').textContent = text;
+            }
+
+            document.getElementById('kidneyForm').addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = isNaN(value) ? value : parseFloat(value);
+                });
+                const response = await fetch('/api/predict_kidney', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify([data])
+                });
+                const result = await response.json();
+                kidneyResults.push(result[0]);
+                displayResults(kidneyResults, 'kidneyChart');
+                displayNumericalSummary(kidneyResults, 'kidneyResult', data);
+            });
+
+            // 处理 Blood Transfusion Prediction 页面逻辑
+            async function fetchBloodFeatureImportance() {
+                const response = await fetch('/api/feature_importance_blood');
+                const featureImportance = await response.json();
+                const featureInputs = document.getElementById('bloodFeatureInputs');
+                const catResponse = await fetch('/api/get_categorical_features_blood');
+                const categoricalFeatures = await catResponse.json();
+
+                for (const feature in featureImportance) {
+                    const div = document.createElement('div');
+                    if (categoricalFeatures.includes(feature)) {
+                        div.innerHTML = `
+                            <label for="${feature}" class="form-label">${feature}</label>
+                            <select class="form-select" id="${feature}" name="${feature}" required>
+                                <option value="" selected disabled>Choose an option</option>
+                            </select>
+                            <br>`;
+                        featureInputs.appendChild(div);
+                        const uniqueValuesResponse = await fetch(`/api/get_unique_values_blood?feature=${feature}`);
+                        const uniqueValues = await uniqueValuesResponse.json();
+                        const selectElement = div.querySelector('select');
+                        uniqueValues.forEach(value => {
+                            const option = document.createElement('option');
+                            option.value = value;
+                            option.textContent = value;
+                            selectElement.appendChild(option);
+                        });
+                    } else {
+                        div.innerHTML = `
+                            <label for="${feature}" class="form-label">${feature}</label>
+                            <input type="number" class="form-control" id="${feature}" name="${feature}" step="0.01" required>
+                            <br>`;
+                        featureInputs.appendChild(div);
+                    }
+                }
+            }
+
+            async function fetchBloodModelSummary() {
+                const response = await fetch('/api/model_summary_blood');
+                const text = await response.text();
+                document.getElementById('bloodModelSummary').textContent = text;
+            }
+
+            document.getElementById('bloodForm').addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = isNaN(value) ? value : parseFloat(value);
+                });
+                const response = await fetch('/api/predict_blood', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify([data])
+                });
+                const result = await response.json();
+                bloodResults.push(result[0]);
+                displayResults(bloodResults, 'bloodChart');
+                displayNumericalSummary(bloodResults, 'bloodResult', data);
+            });
+
+            function displayResults(results, chartId) {
+                const datasets = [];
+                const errorBars = [];
+                results.forEach((res, index) => {
+                    const patientLabel = `Patient ${index + 1}`;
+                    const color = getRandomColor();
+                    datasets.push({
+                        label: patientLabel,
+                        data: [{ x: res.probability, y: index }],
+                        backgroundColor: color,
+                        borderColor: color,
+                        borderWidth: 1,
+                        pointStyle: 'rectRot',
+                        pointRadius: 5,
+                        pointBackgroundColor: color
+                    });
+                    errorBars.push({
+                        xMin: res.conf_interval[0],
+                        xMax: res.conf_interval[1],
+                        y: index,
+                        color: color
+                    });
+                });
+
+                const ctx = document.getElementById(chartId).getContext('2d');
+                if (window[chartId]) {
+                    if (typeof window[chartId].destroy === 'function') {
+                        window[chartId].destroy();
+                    }
+                }
+
+                window[chartId] = new Chart(ctx, {
+                    type: 'scatter',
+                    data: { datasets: datasets },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                min: 0,
+                                max: 1,
+                                title: { display: true, text: 'Probability', font: { size: 20 } },
+                                ticks: { font: { size: 18 } }
+                            },
+                            y: {
+                                type: 'linear',
+                                position: 'left',
+                                ticks: {
+                                    callback: function(value) { return `Patient ${value + 1}`; },
+                                    stepSize: 1,
+                                    font: { size: 18 }
+                                },
+                                title: { display: true, text: 'Patients', font: { size: 20 } }
+                            }
+                        },
+                        plugins: {
+                            legend: { labels: { font: { size: 18 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.raw.x;
+                                        const errorBar = errorBars[context.datasetIndex];
+                                        const ciLower = errorBar.xMin.toFixed(6);
+                                        const ciUpper = errorBar.xMax.toFixed(6);
+                                        return `${value.toFixed(6)} (${ciLower}, ${ciUpper})`;
+                                    }
+                                },
+                                titleFont: { size: 18 },
+                                bodyFont: { size: 18 }
+                            }
+                        }
+                    },
+                    plugins: [{
+                        id: 'errorBars',
+                        afterDraw: (chart) => {
+                            const ctx = chart.ctx;
+                            chart.data.datasets.forEach((dataset, datasetIndex) => {
+                                const meta = chart.getDatasetMeta(datasetIndex);
+                                meta.data.forEach((point, index) => {
+                                    const errorBar = errorBars[datasetIndex];
+                                    if (errorBar) {
+                                        const startX = chart.scales.x.getPixelForValue(errorBar.xMin);
+                                        const endX = chart.scales.x.getPixelForValue(errorBar.xMax);
+                                        const centerY = point.y;
+                                        ctx.save();
+                                        ctx.beginPath();
+                                        ctx.strokeStyle = dataset.borderColor;
+                                        ctx.moveTo(startX, centerY);
+                                        ctx.lineTo(endX, centerY);
+                                        ctx.stroke();
+                                        ctx.restore();
+                                    }
+                                });
+                            });
+                        }
+                    }]
+                });
+            }
+
+            function displayNumericalSummary(results, elementId, inputData) {
+                const resultDiv = document.getElementById(elementId);
+                let summary = '';
+
+                results.forEach((res, index) => {
+                    summary += `Patient ${index + 1}:\n`;
+                    summary += `Predicted Probability: ${res.probability.toFixed(6)}\n`;
+                    summary += `95% Confidence Interval: (${res.conf_interval[0].toFixed(6)}, ${res.conf_interval[1].toFixed(6)})\n\n`;
+                });
+
+                summary += 'Input Features:\n';
+                for (const [key, value] of Object.entries(inputData)) {
+                    summary += `${key}: ${value}\n`;
+                }
+
+                resultDiv.textContent = summary;
+            }
+
+            function getRandomColor() {
+                const letters = '0123456789ABCDEF';
+                let color = '#';
+                for (let i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+
+            // 初始化页面时加载各页面的特征和模型摘要
+            fetchKidneyFeatureImportance();
+            fetchKidneyModelSummary();
+            fetchBloodFeatureImportance();
+            fetchBloodModelSummary();
+        });
+    </script>
+</body>
+</html>
