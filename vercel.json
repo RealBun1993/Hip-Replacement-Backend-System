@@ -12,11 +12,8 @@
       "src": "/api/predict_kidney",
       "dest": "/api/api.py",
       "methods": ["POST"]
-    },
-    {
-      "src": "/api/predict_blood",
-      "dest": "/api/api.py",
-      "methods": ["POST"]
     }
-  ]
+  ],
+  "installCommand": "pip install --upgrade pip && pip install -r requirements.txt"
 }
+
